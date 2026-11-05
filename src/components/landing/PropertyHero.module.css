@@ -1,0 +1,118 @@
+.introduction {
+  --section-gutter: clamp(6px, 1vw, 12px);
+  padding: 64px var(--section-gutter);
+  background: #f2efe8;
+  color: #292e26;
+}
+.title { max-width: 960px; margin: 0; font-family: Georgia, "Times New Roman", serif; font-size: clamp(30px, 4.2vw, 56px); font-weight: 400; line-height: 1.22; letter-spacing: -.035em; text-wrap: pretty; }
+.mosaic {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 8px;
+  max-width: 988px;
+  margin-inline: auto;
+  margin-top: clamp(32px, 5vw, 64px);
+}
+.mosaic figure {
+  position: relative;
+  margin: 0;
+  aspect-ratio: 3 / 2;
+  border-radius: 6px;
+  overflow: hidden;
+  background: #d8dace;
+}
+.mosaic img {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+}
+.mosaic figure:first-child img { object-position: 55% center; }
+.mosaic figure:last-child { aspect-ratio: 5659 / 1906; }
+.mosaic figcaption {
+  position: absolute;
+  inset: auto 0 0;
+  padding: 28px 12px 12px;
+  background: linear-gradient(transparent, #171512b8);
+  color: #fff;
+  text-align: left;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 1.4;
+}
+.highlights {
+  display: grid;
+  gap: 24px;
+  max-width: 1120px;
+  margin: clamp(32px, 5vw, 56px) auto 40px;
+  padding: 28px 0 0;
+  border-top: 1px solid #29312626;
+  list-style: none;
+  text-align: left;
+  font-family: Arial, Helvetica, sans-serif;
+}
+.highlights h3 { margin: 0 0 6px; font-size: 17px; font-weight: 700; line-height: 1.4; }
+.highlights p { margin: 0; color: #616457; font-size: 16px; line-height: 1.65; }
+.cta {
+  display: inline-flex;
+  width: 100%;
+  min-height: 48px;
+  align-items: center;
+  justify-content: center;
+  padding: 15px clamp(20px, 4vw, 32px);
+  border: 1px solid transparent;
+  border-radius: 50px;
+  background-color: #394432;
+  color: #fff;
+  font: inherit;
+  font-size: clamp(17px, calc(1.5vw + 2px), 19px);
+  line-height: 1.5;
+  text-align: center;
+  box-shadow: 0 3px 10px #292e2620;
+  transition: background-color 250ms ease, box-shadow 250ms ease, transform 150ms ease;
+  scroll-margin-block-start: calc(var(--header-height, 0px) + 24px);
+}
+.cta:not(:disabled) { cursor: pointer; }
+@media (hover: hover) {
+  .cta:not(:disabled):hover { background-color: #4b5a41; box-shadow: 0 5px 15px #292e2629; }
+}
+.cta:not(:disabled):active { background-color: #263020; transition-duration: 0ms; }
+@media (prefers-reduced-motion: no-preference) {
+  .cta:not(:disabled):active { transform: scale(.98); box-shadow: 0 2px 6px #292e2620; }
+}
+.cta:focus-visible { outline: 2px solid #394432; outline-offset: 5px; }
+.cta:disabled { cursor: not-allowed; background: #4d5646; }
+/* These overrides apply only to Section 2, not the shared CTAs elsewhere. */
+.introduction .inner { text-align: center; }
+.introduction .title { margin-inline: auto; text-align: left; }
+@media (min-width: 768px) {
+  .introduction { padding-block: 96px; }
+  .mosaic {
+    /* Recover 40% of the space outside the previous 988px / 48px-inset mosaic. */
+    width: min(
+      calc(100% - 28.8px + var(--section-gutter) * .8),
+      calc(40% + 592.8px + var(--section-gutter) * .8)
+    );
+    max-width: none;
+    grid-template-columns: minmax(0, 3fr) minmax(0, 2fr);
+    gap: clamp(12px, 1.1vw, 18px);
+  }
+  .mosaic figure:first-child { aspect-ratio: 610 / 540; }
+  .mosaic figure:nth-child(2) { aspect-ratio: auto; }
+  .mosaic figure:last-child { grid-column: 1 / -1; }
+  .mosaic figcaption { padding: 36px 16px 16px; font-size: 16px; }
+  .highlights { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: clamp(24px, 5vw, 64px); margin-bottom: 48px; }
+  .cta { width: auto; min-width: 360px; }
+}
+@media (min-width: 1200px) { .introduction { padding-block: 120px; } }
+/* Browsers without view timelines retain fully visible content. */
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .inner { animation: reveal linear both; animation-timeline: view(); animation-range: entry 0% entry 25%; }
+  }
+}
+@keyframes reveal { from { opacity: .4; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+@media (prefers-reduced-motion: reduce) { .cta { transition: none; } }

@@ -2,6 +2,8 @@
 import { useEffect, type RefObject } from "react";
 
 const COUNT = 323;
+// Hold the first and last frames for 8% of the scroll track at each end.
+const EDGE_HOLD = 0.08;
 export function useFrameScroll(track: RefObject<HTMLElement | null>, stage: RefObject<HTMLDivElement | null>, canvas: RefObject<HTMLCanvasElement | null>) {
   useEffect(() => {
     const root = track.current, scene = stage.current, surface = canvas.current;
@@ -48,7 +50,7 @@ export function useFrameScroll(track: RefObject<HTMLElement | null>, stage: RefO
         pump();
       };
       image.onerror = () => { active--; pending.delete(index); if (!disposed) { if (index === 0) scene!.dataset.video = "error"; } };
-      image.src = `/media/frames/frame-${String(index + 1).padStart(4,"0")}.jpg`;
+      image.src = `/media/residence-v2-frames/frame-${String(index + 1).padStart(4,"0")}.jpg`;
     }
     function pump() {
       if (motion.matches) return;
@@ -61,7 +63,8 @@ export function useFrameScroll(track: RefObject<HTMLElement | null>, stage: RefO
       }
     }
     const update = () => {
-      target = motion.matches ? 0 : Math.max(0, Math.min(1, -root.getBoundingClientRect().top / Math.max(1, root.offsetHeight - innerHeight))) * (COUNT - 1);
+      const progress = -root.getBoundingClientRect().top / Math.max(1, root.offsetHeight - innerHeight);
+      target = motion.matches ? 0 : Math.max(0, Math.min(1, (progress - EDGE_HOLD) / (1 - 2 * EDGE_HOLD))) * (COUNT - 1);
       wake();
     };
     const resize = () => {
