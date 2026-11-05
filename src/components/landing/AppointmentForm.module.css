@@ -1,13 +1,13 @@
 .section {
-  padding: clamp(64px, 8vw, 120px) 24px;
+  padding: clamp(56px, 7vw, 88px) 24px;
   background: #f2efe8;
   color: #292e26;
   scroll-margin-top: calc(var(--header-height, 0px) + 24px);
 }
 .section:focus-visible { outline: 2px solid #394432; outline-offset: -6px; }
-.inner { max-width: 620px; margin-inline: auto; }
+.inner { max-width: 620px; margin-inline: auto; display: flex; flex-direction: column; align-items: center; }
 .heading {
-  margin: 0 0 clamp(36px, 5vw, 52px);
+  margin: 0 0 clamp(32px, 5vw, 44px);
   font-family: Georgia, "Times New Roman", serif;
   font-size: clamp(32px, 4.2vw, 50px);
   font-weight: 400;
@@ -16,53 +16,16 @@
   text-align: center;
   text-wrap: balance;
 }
-.form { display: grid; gap: 26px; }
-.field { display: grid; gap: 10px; min-width: 0; }
-.field label { font-size: 15px; font-weight: 500; line-height: 1.6; }
-.field input, .field select {
-  display: block;
-  width: 100%;
-  min-width: 0;
-  min-height: 56px;
-  padding: 15px 16px;
-  border: 1px solid #b1b4a7;
-  border-radius: 6px;
-  background: #fbfaf6;
-  color: #292e26;
-  font: inherit;
-  font-size: 16px;
-  line-height: 1.5;
-  box-shadow: 0 2px 6px #292e2605;
-}
-.field input::placeholder, .field select:has(option:checked[value=""]) { color: #666b5f; opacity: 1; }
-.field input:focus-visible, .field select:focus-visible, .submit:focus-visible {
-  outline: 2px solid #394432;
-  outline-offset: 3px;
-}
-.field [aria-invalid="true"] { border-color: #964431; }
-.selectWrap { position: relative; min-width: 0; }
-.selectWrap::after {
-  content: "";
-  position: absolute;
-  right: 19px;
-  top: 23px;
-  width: 8px;
-  height: 8px;
-  border-right: 1.5px solid #394432;
-  border-bottom: 1.5px solid #394432;
-  transform: rotate(45deg);
-  pointer-events: none;
-}
-.selectedText { display: block; min-height: 56px; padding: 16px 44px 16px 17px; font-size: 16px; line-height: 1.5; overflow-wrap: anywhere; }
-.selectWrap:has(option:checked[value=""]) .selectedText { color: #666b5f; }
-.field select { position: absolute; inset: 0; height: 100%; appearance: none; padding-right: 44px; cursor: pointer; color: transparent; background: transparent; }
-.field select:has(option:checked[value=""]) { color: transparent; }
-.field select option { color: #292e26; background: #fbfaf6; }
-.error { margin: 0; color: #853b2b; font-size: 14px; line-height: 1.5; }
+.submit:focus-visible { outline: 2px solid #394432; outline-offset: 3px; }
 .submit {
-  width: 100%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: min(100%, 360px);
+  text-align: center;
+  text-decoration: none;
   min-height: 58px;
-  margin-top: 8px;
+  margin: 0;
   padding: 16px 20px;
   border: 1px solid transparent;
   border-radius: 50px;
@@ -70,16 +33,14 @@
   color: #fff;
   font: inherit;
   font-weight: 500;
-  font-size: 16px;
+  font-size: 18px;
   line-height: 1.5;
   cursor: pointer;
   box-shadow: 0 3px 10px #292e2620;
 }
 @media (hover: hover) { .submit:hover { background: #4b5a41; box-shadow: 0 5px 15px #292e2629; } }
 .submit:active { background: #263020; }
-.trust { margin: -10px 0 0; color: #616457; font-size: 14px; font-weight: 400; line-height: 1.7; text-align: center; }
 @media (prefers-reduced-motion: no-preference) {
   .submit { transition: background-color 250ms ease, box-shadow 250ms ease, transform 150ms ease; }
   .submit:active { transform: scale(.98); }
-  .field input, .field select { transition: border-color 200ms ease, box-shadow 200ms ease; }
 }
