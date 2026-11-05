@@ -7,17 +7,17 @@ export function useFrameScroll(track: RefObject<HTMLElement | null>, stage: RefO
   useEffect(() => {
     const root = track.current, scene = stage.current, surface = canvas.current;
     if (!root || !scene || !surface) return;
+    const cta = scene.querySelector<HTMLElement>("[data-hero-cta]");
+    const opening = scene.querySelector<HTMLElement>('[data-hero-copy="opening"]');
     const ctx = surface.getContext("2d", { alpha:false });
-    if (!ctx) { scene.dataset.video = "error"; return; }
+    if (!ctx) {
+      scene.dataset.video = "error";
+      if (cta) { cta.inert = false; cta.setAttribute("aria-hidden", "false"); }
+      return;
+    }
     const motion = matchMedia("(prefers-reduced-motion: reduce)");
     const mobile = matchMedia("(max-width: 760px)");
-    const copies = [...scene.querySelectorAll<HTMLElement>("[data-hero-copy]")];
     const mark = scene.querySelector<HTMLElement>("[data-hero-mark]");
-    const chapter = scene.querySelector<HTMLElement>("[data-hero-chapter]");
-    const ticks = [...scene.querySelectorAll<HTMLElement>("[data-hero-tick]")];
-    // Reuse existing copy without guessing which rooms appear at arbitrary frame offsets.
-    const labels = ["Preventa exclusiva en Texcoco", "89 m² habitables", "con 3 recámaras", "Agendar Visita al Depa Muestra"];
-    let chapterIndex = -1;
     const sample = (value: number) => mobile.matches ? Math.min(COUNT - 1, Math.round(value / 2) * 2) : Math.round(value);
     const frames: (HTMLImageElement | undefined)[] = new Array(COUNT);
     const pending = new Set<number>();
@@ -87,24 +87,21 @@ export function useFrameScroll(track: RefObject<HTMLElement | null>, stage: RefO
       const progress = fallback ? 0 : clamp(distance / range);
       const exit = fallback ? 0 : clamp((distance - range) / viewport);
       target = progress * (COUNT - 1);
-      scene.style.setProperty("--hero-progress", String(progress));
       scene.style.transform = exit ? `scale(${1 - .1 * exit})` : "";
       scene.style.filter = exit ? `brightness(${1 - .5 * exit})` : "";
-      const visible = [fallback || progress < .2, !fallback && progress > .36 && progress < .62, !fallback && progress > .86 && exit < 1];
-      copies.forEach((copy, index) => {
-        copy.dataset.visible = String(visible[index]);
-        copy.inert = !visible[index];
-        copy.setAttribute("aria-hidden", String(!visible[index]));
-      });
-      if (mark) mark.dataset.visible = String(!fallback && progress > .86);
-      ticks.forEach(tick => { tick.dataset.active = String(progress >= Number(tick.dataset.heroTick) - .001); });
-      const nextChapter = progress < .03 ? -1 : progress < .16 ? 0 : progress < .3 ? 1 : progress < .96 ? 2 : 3;
-      if (chapter && chapterIndex !== nextChapter) {
-        chapterIndex = nextChapter;
-        chapter.textContent = labels[Math.max(0, nextChapter)];
-        chapter.getAnimations().forEach(animation => animation.cancel());
-        if (!fallback) chapter.animate([{ opacity: 0, transform: "translateY(6px)" }, { opacity: 1, transform: "none" }], { duration: 500, easing: "cubic-bezier(.2,.7,.2,1)" });
+      const visible = fallback || (progress > .86 && exit < 1);
+      if (opening) {
+        const showOpening = fallback || progress < .2;
+        opening.dataset.visible = String(showOpening);
+        opening.inert = !showOpening;
+        opening.setAttribute("aria-hidden", String(!showOpening));
       }
+      if (cta) {
+        cta.dataset.visible = String(visible);
+        cta.inert = !visible;
+        cta.setAttribute("aria-hidden", String(!visible));
+      }
+      if (mark) mark.dataset.visible = String(!fallback && progress > .86);
       if (fallback) return;
       pump();
       wake();
