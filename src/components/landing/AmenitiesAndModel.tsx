@@ -40,7 +40,7 @@ export function AmenitiesAndModel() {
               <li>Camina un departamento idéntico en distribución y carpintería.</li>
               <li>Comprueba en persona la cancelería, iluminación y calidad de obra.</li>
             </ul>
-            <AppointmentCta label="Agendar Recorrido al Depa Muestra" returnToPrimary />
+            <AppointmentCta label="Agendar Recorrido al Depa Muestra" />
           </div>
         </section>
       </div>

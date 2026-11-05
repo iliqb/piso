@@ -1,0 +1,42 @@
+.footer {
+  padding: 28px 24px;
+  background: #394432;
+  color: #f2efe8;
+}
+.inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  max-width: 1120px;
+  min-height: 32px;
+  margin-inline: auto;
+}
+/* Reuse the original logo's crop and light treatment from the video hero. */
+.logo {
+  position: relative;
+  width: 120px;
+  aspect-ratio: 1121 / 244;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+.logo img {
+  position: absolute;
+  width: 253.9697%;
+  max-width: none;
+  height: 781.5574%;
+  left: -76.9848%;
+  top: -285.2459%;
+  filter: invert(1);
+}
+.copyright {
+  margin: 0;
+  font-size: 12px;
+  font-weight: 300;
+  line-height: 1.5;
+  letter-spacing: .08em;
+  white-space: nowrap;
+}
+@media (min-width: 768px) { .footer { padding-inline: 48px; } }
+@media (min-width: 1200px) { .footer { padding-inline: 72px; } }
+@media (max-width: 299px) { .inner { flex-direction: column; gap: 16px; } }

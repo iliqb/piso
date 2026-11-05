@@ -20,7 +20,7 @@ export function VideoHero() {
           <img src="/brand/piso-logo.png" width={2847} height={1907} alt="Piso" />
         </div>
         <div className={styles.copy}>
-          <h1>Preventa Exclusiva en Texcoco</h1>
+          <h1>Preventa exclusiva<br />en Texcoco</h1>
           <p className={styles.price}><span className={styles.from}>DESDE</span> <span className={styles.amount}>$3,411,738</span> <span className={styles.currency}>MXN</span></p>
         </div>
       </div>
