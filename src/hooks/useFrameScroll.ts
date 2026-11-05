@@ -2,7 +2,32 @@
 import { useEffect, type RefObject } from "react";
 
 const COUNT = 323;
+// Keep the original first/last-frame holds, plus brief rests between movements.
+const EDGE_HOLD = 0.08;
+const MOVEMENT_HOLD = 0.015;
 const clamp = (value: number) => Math.max(0, Math.min(1, value));
+const MOVING_RANGE = 1 - 2 * EDGE_HOLD - 2 * MOVEMENT_HOLD;
+const FIRST_REST = EDGE_HOLD + .3 * MOVING_RANGE;
+const SECOND_REST = EDGE_HOLD + .66 * MOVING_RANGE + MOVEMENT_HOLD;
+const FRAME_TIMELINE = [
+  [0, 0], [EDGE_HOLD, 0],
+  [FIRST_REST, .3], [FIRST_REST + MOVEMENT_HOLD, .3],
+  [SECOND_REST, .66], [SECOND_REST + MOVEMENT_HOLD, .66],
+  [1 - EDGE_HOLD, 1], [1, 1],
+] as const;
+
+function frameProgress(progress: number) {
+  const p = clamp(progress);
+  for (let i = 1; i < FRAME_TIMELINE.length; i++) {
+    const [end, to] = FRAME_TIMELINE[i];
+    if (p > end) continue;
+    const [start, from] = FRAME_TIMELINE[i - 1];
+    const t = (p - start) / (end - start);
+    // Smoothstep arrives at and leaves each hold with zero target velocity.
+    return from + (to - from) * t * t * (3 - 2 * t);
+  }
+  return 1;
+}
 export function useFrameScroll(track: RefObject<HTMLElement | null>, stage: RefObject<HTMLDivElement | null>, canvas: RefObject<HTMLCanvasElement | null>) {
   useEffect(() => {
     const root = track.current, scene = stage.current, surface = canvas.current;
@@ -86,7 +111,7 @@ export function useFrameScroll(track: RefObject<HTMLElement | null>, stage: RefO
       const fallback = motion.matches || scene.dataset.video === "error";
       const progress = fallback ? 0 : clamp(distance / range);
       const exit = fallback ? 0 : clamp((distance - range) / viewport);
-      target = progress * (COUNT - 1);
+      target = frameProgress(progress) * (COUNT - 1);
       scene.style.transform = exit ? `scale(${1 - .1 * exit})` : "";
       scene.style.filter = exit ? `brightness(${1 - .5 * exit})` : "";
       const visible = fallback || (progress > .86 && exit < 1);
