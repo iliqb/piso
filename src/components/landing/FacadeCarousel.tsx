@@ -18,6 +18,7 @@ export function FloorPlanCarousel() {
       images={[
         { src: "/planos/departamento-c.png", alt: "Plano amueblado del departamento C" },
         { src: "/planos/departamento-b.png", alt: "Plano amueblado del departamento B" },
+        { src: "/planos/departamento-a2.png", alt: "Plano amueblado del departamento A2" },
       ]}
       label="Planos de los departamentos"
       width={3014}
