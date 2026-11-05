@@ -2,8 +2,7 @@
 import { useEffect, type RefObject } from "react";
 
 const COUNT = 323;
-// Hold the first and last frames for 8% of the scroll track at each end.
-const EDGE_HOLD = 0.08;
+const clamp = (value: number) => Math.max(0, Math.min(1, value));
 export function useFrameScroll(track: RefObject<HTMLElement | null>, stage: RefObject<HTMLDivElement | null>, canvas: RefObject<HTMLCanvasElement | null>) {
   useEffect(() => {
     const root = track.current, scene = stage.current, surface = canvas.current;
@@ -11,8 +10,18 @@ export function useFrameScroll(track: RefObject<HTMLElement | null>, stage: RefO
     const ctx = surface.getContext("2d", { alpha:false });
     if (!ctx) { scene.dataset.video = "error"; return; }
     const motion = matchMedia("(prefers-reduced-motion: reduce)");
+    const mobile = matchMedia("(max-width: 760px)");
+    const copies = [...scene.querySelectorAll<HTMLElement>("[data-hero-copy]")];
+    const mark = scene.querySelector<HTMLElement>("[data-hero-mark]");
+    const chapter = scene.querySelector<HTMLElement>("[data-hero-chapter]");
+    const ticks = [...scene.querySelectorAll<HTMLElement>("[data-hero-tick]")];
+    // Reuse existing copy without guessing which rooms appear at arbitrary frame offsets.
+    const labels = ["Preventa exclusiva en Texcoco", "89 m² habitables", "con 3 recámaras", "Agendar Visita al Depa Muestra"];
+    let chapterIndex = -1;
+    const sample = (value: number) => mobile.matches ? Math.min(COUNT - 1, Math.round(value / 2) * 2) : Math.round(value);
     const frames: (HTMLImageElement | undefined)[] = new Array(COUNT);
     const pending = new Set<number>();
+    const failed = new Set<number>();
     const cacheOrder: number[] = [];
     let disposed = false, raf = 0, current = 0, target = 0, last = 0, drawn = -1, active = 0;
     const draw = (index: number) => {
@@ -25,18 +34,19 @@ export function useFrameScroll(track: RefObject<HTMLElement | null>, stage: RefO
     };
     const tick = (now: number) => {
       raf = 0;
-      if (disposed || document.hidden) return;
+      if (disposed || document.hidden || motion.matches || scene.dataset.video === "error") return;
       const dt = last ? Math.min(64, now - last) : 16.67; last = now;
       current += (target - current) * (1 - Math.pow(.82, dt / 16.67));
       if (Math.abs(target - current) < .01) current = target;
-      const frame = Math.round(current);
+      const frame = sample(current);
       load(frame);
       draw(frame);
+      pump();
       if (current !== target) raf = requestAnimationFrame(tick);
     };
     const wake = () => { if (!raf && !disposed && !document.hidden) { last = 0; raf = requestAnimationFrame(tick); } };
     function load(index: number) {
-      if (disposed || frames[index] || pending.has(index)) return;
+      if (disposed || active >= 4 || index < 0 || index >= COUNT || frames[index] || pending.has(index) || failed.has(index) || motion.matches || scene!.dataset.video === "error") return;
       pending.add(index); active++;
       const image = new Image(); image.decoding = "async";
       image.onload = () => {
@@ -45,43 +55,77 @@ export function useFrameScroll(track: RefObject<HTMLElement | null>, stage: RefO
         frames[index] = image;
         cacheOrder.push(index);
         if (cacheOrder.length > 36) { const old = cacheOrder.shift(); if (old !== undefined) frames[old] = undefined; }
-        if (index === 0) { scene!.dataset.video = "ready"; draw(0); }
-        if (Math.round(current) === index) draw(index);
+        if (index === 0) scene!.dataset.video = "ready";
+        if (sample(current) === index || drawn === -1) draw(index);
         pump();
       };
-      image.onerror = () => { active--; pending.delete(index); if (!disposed) { if (index === 0) scene!.dataset.video = "error"; } };
+      image.onerror = () => {
+        active--; pending.delete(index); failed.add(index);
+        if (disposed) return;
+        if (index === 0) { scene!.dataset.video = "error"; update(); }
+        else pump();
+      };
       image.src = `/media/residence-v2-frames/frame-${String(index + 1).padStart(4,"0")}.jpg`;
     }
     function pump() {
-      if (motion.matches) return;
+      if (motion.matches || document.hidden || scene!.dataset.video === "error") return;
+      load(sample(current));
+      load(sample(target));
       for (let distance = 0; distance <= 8 && active < 4; distance++) {
         for (const center of [Math.round(current), Math.round(target)]) {
           for (const index of [center + distance, center - distance]) {
-            if (!disposed && active < 4 && index >= 0 && index < COUNT) load(index);
+            if (!disposed && active < 4 && index >= 0 && index < COUNT) load(sample(index));
           }
         }
       }
     }
     const update = () => {
-      const progress = -root.getBoundingClientRect().top / Math.max(1, root.offsetHeight - innerHeight);
-      target = motion.matches ? 0 : Math.max(0, Math.min(1, (progress - EDGE_HOLD) / (1 - 2 * EDGE_HOLD))) * (COUNT - 1);
+      const viewport = scene.clientHeight;
+      const distance = -root.getBoundingClientRect().top;
+      const range = Math.max(1, root.offsetHeight - 2 * viewport);
+      const fallback = motion.matches || scene.dataset.video === "error";
+      const progress = fallback ? 0 : clamp(distance / range);
+      const exit = fallback ? 0 : clamp((distance - range) / viewport);
+      target = progress * (COUNT - 1);
+      scene.style.setProperty("--hero-progress", String(progress));
+      scene.style.transform = exit ? `scale(${1 - .1 * exit})` : "";
+      scene.style.filter = exit ? `brightness(${1 - .5 * exit})` : "";
+      const visible = [fallback || progress < .2, !fallback && progress > .36 && progress < .62, !fallback && progress > .86 && exit < 1];
+      copies.forEach((copy, index) => {
+        copy.dataset.visible = String(visible[index]);
+        copy.inert = !visible[index];
+        copy.setAttribute("aria-hidden", String(!visible[index]));
+      });
+      if (mark) mark.dataset.visible = String(!fallback && progress > .86);
+      ticks.forEach(tick => { tick.dataset.active = String(progress >= Number(tick.dataset.heroTick) - .001); });
+      const nextChapter = progress < .03 ? -1 : progress < .16 ? 0 : progress < .3 ? 1 : progress < .96 ? 2 : 3;
+      if (chapter && chapterIndex !== nextChapter) {
+        chapterIndex = nextChapter;
+        chapter.textContent = labels[Math.max(0, nextChapter)];
+        chapter.getAnimations().forEach(animation => animation.cancel());
+        if (!fallback) chapter.animate([{ opacity: 0, transform: "translateY(6px)" }, { opacity: 1, transform: "none" }], { duration: 500, easing: "cubic-bezier(.2,.7,.2,1)" });
+      }
+      if (fallback) return;
+      pump();
       wake();
     };
     const resize = () => {
       const ratio = Math.min(devicePixelRatio || 1, 1.5);
       surface.width = Math.round(scene.clientWidth * ratio); surface.height = Math.round(scene.clientHeight * ratio);
-      drawn = -1; draw(Math.round(current)); update();
+      drawn = -1; draw(sample(current)); update();
     };
     const changed = () => { current = 0; target = 0; drawn = -1; resize(); pump(); };
     window.addEventListener("scroll", update, { passive:true });
     window.addEventListener("resize", resize);
     motion.addEventListener("change", changed);
+    mobile.addEventListener("change", changed);
     document.addEventListener("visibilitychange", update);
-    resize(); load(0); pump();
+    load(0); resize(); pump();
     return () => {
       disposed = true; cancelAnimationFrame(raf);
       window.removeEventListener("scroll", update); window.removeEventListener("resize", resize);
       motion.removeEventListener("change", changed); document.removeEventListener("visibilitychange", update);
+      mobile.removeEventListener("change", changed);
       frames.length = 0;
     };
   }, [track, stage, canvas]);

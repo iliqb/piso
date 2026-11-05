@@ -4,6 +4,20 @@
   background: #f2efe8;
   color: #292e26;
 }
+/* Only the outer shell overlaps Section 1; all internal Section 2 rules stay intact. */
+@media (prefers-reduced-motion: no-preference) {
+  :global(.film-track) + .introduction {
+    position: relative;
+    z-index: 3;
+    margin-top: -100vh;
+    margin-top: -100svh;
+    border-radius: 34px 34px 0 0;
+    box-shadow: 0 -30px 70px #140e0a59;
+  }
+  @media (max-width: 900px) {
+    :global(.film-track) + .introduction { border-radius: 24px 24px 0 0; }
+  }
+}
 .title { max-width: 960px; margin: 0; font-family: Georgia, "Times New Roman", serif; font-size: clamp(30px, 4.2vw, 56px); font-weight: 400; line-height: 1.22; letter-spacing: -.035em; text-wrap: pretty; }
 .mosaic {
   display: grid;
