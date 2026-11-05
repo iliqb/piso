@@ -78,8 +78,6 @@
 @media (hover: hover) { .submit:hover { background: #4b5a41; box-shadow: 0 5px 15px #292e2629; } }
 .submit:active { background: #263020; }
 .trust { margin: -10px 0 0; color: #616457; font-size: 14px; font-weight: 400; line-height: 1.7; text-align: center; }
-.notice { margin: 0; color: #853b2b; font-size: 14px; line-height: 1.6; text-align: center; }
-.notice:empty { display: none; }
 @media (prefers-reduced-motion: no-preference) {
   .submit { transition: background-color 250ms ease, box-shadow 250ms ease, transform 150ms ease; }
   .submit:active { transform: scale(.98); }

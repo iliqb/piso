@@ -1,10 +1,9 @@
 "use client";
 
-import { useState, type FormEvent } from "react";
+import { useRef, useState, type FormEvent } from "react";
 import styles from "./AppointmentForm.module.css";
 
-// CONFIGURAR: número del asesor con código de país, solo dígitos (sin +).
-const WHATSAPP_CONTACT_NUMBER: string = "";
+const BOOKING_URL = "https://calendar.google.com/calendar/u/0/appointments/schedules/AcZssZ1TzH5OhtrcugQsRZYOfWDvTrRiJJcOUtERndqgWYxo7weSFk58BXf7iHSWpuAkqTdrFX0oxG-S";
 
 const availabilityOptions = [
   "Tengo el capital disponible de inmediato.",
@@ -15,7 +14,7 @@ type Field = "name" | "phone" | "availability";
 
 export function AppointmentForm() {
   const [errors, setErrors] = useState<Partial<Record<Field, string>>>({});
-  const [notice, setNotice] = useState("");
+  const bookingLink = useRef<HTMLAnchorElement>(null);
   const [selectedAvailability, setSelectedAvailability] = useState("");
 
   function submit(event: FormEvent<HTMLFormElement>) {
@@ -30,18 +29,14 @@ export function AppointmentForm() {
     if (!/^[0-9]{10}$/.test(phone)) nextErrors.phone = "Escribe un número de WhatsApp de exactamente 10 dígitos.";
     if (!availabilityOptions.includes(availability)) nextErrors.availability = "Selecciona tu disponibilidad para el enganche.";
     setErrors(nextErrors);
-    setNotice("");
     const firstInvalid = (Object.keys(nextErrors) as Field[])[0];
     if (firstInvalid) {
       (form.elements.namedItem(firstInvalid) as HTMLElement)?.focus();
       return;
     }
-    if (!/^[1-9][0-9]{7,14}$/.test(WHATSAPP_CONTACT_NUMBER)) {
-      setNotice("El contacto de WhatsApp aún no está disponible. Inténtalo más adelante; tu solicitud no se ha enviado.");
-      return;
-    }
-    const message = `Hola, me gustaría agendar un recorrido privado al departamento muestra de Piso Zen.\n\nNombre: ${name}\n\nMi WhatsApp: ${phone}\n\nDisponibilidad para el enganche: ${availability}\n\nQuedo pendiente de la confirmación de mi visita. Gracias.`;
-    window.open(`https://wa.me/${WHATSAPP_CONTACT_NUMBER}?text=${encodeURIComponent(message)}`, "_blank", "noopener,noreferrer");
+    // Keep this synchronous with submission so mobile browsers retain user activation.
+    // Form values remain local; Google Calendar handles the actual booking.
+    bookingLink.current?.click();
   }
 
   return (
@@ -70,9 +65,9 @@ export function AppointmentForm() {
             </div>
             {errors.availability && <p id="appointment-availability-error" className={styles.error}>{errors.availability}</p>}
           </div>
-          <button className={styles.submit} type="submit">Confirmar Cita por WhatsApp</button>
+          <button className={styles.submit} type="submit">Confirmar Cita</button>
+          <a ref={bookingLink} href={BOOKING_URL} target="_blank" rel="noopener noreferrer" hidden>Google Calendar</a>
           <p className={styles.trust}>Tus datos están protegidos. Un asesor te confirmará el acceso y enviará la ubicación en Maps vía WhatsApp.</p>
-          <p className={styles.notice} role="status">{notice}</p>
         </form>
       </div>
     </section>
