@@ -22,7 +22,10 @@
 :global([data-video="ready"]) .loaderBrand { opacity: 0; visibility: hidden; }
 :global([data-video="ready"]) .loaderBrand .logo { --loaded: 0%; }
 :global([data-video="error"]) .loaderBrand { display: none; }
-.cta { align-self: flex-start; width: fit-content; max-width: 100%; opacity: 0; visibility: hidden; transform: translateY(14px); transition: opacity .6s ease, transform .6s ease, visibility .6s; }
+.cta { align-self: center; width: fit-content; max-width: 100%; opacity: 0; visibility: hidden; transform: translateY(14px); transition: opacity .6s ease, transform .6s ease, visibility .6s; }
+.cta a { background-color: #b4e63b; color: #263020; }
+.cta a:hover { background-color: #c4f34f; }
+.cta a:active { background-color: #9dce2c; }
 .cta[data-visible="true"] { opacity: 1; visibility: visible; transform: none; pointer-events: auto; }
 .reveal { position: absolute; left: max(24px, env(safe-area-inset-left)); right: max(24px, env(safe-area-inset-right)); bottom: max(132px, calc(env(safe-area-inset-bottom) + 116px)); max-width: calc(100% - 48px); opacity: 1; visibility: visible; transform: none; text-shadow: 0 2px 20px #0008; transition: opacity .6s ease, transform .6s ease, visibility .6s; }
 .reveal[data-visible="false"] { opacity: 0; visibility: hidden; transform: translateY(14px); }

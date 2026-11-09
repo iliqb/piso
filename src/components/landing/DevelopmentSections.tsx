@@ -1,4 +1,4 @@
-import { AppointmentCta } from "./AppointmentCta";
+
 import { FacadeCarousel, FloorPlanCarousel } from "./FacadeCarousel";
 import styles from "./LandingSections.module.css";
 
@@ -35,7 +35,7 @@ export function DevelopmentSections() {
               <li>Recámara principal con vestidor/baño completo + 2 recámaras secundarias con clóset y baño completo compartido.</li>
               <li>1 Cajón de estacionamiento asignado en sótano.</li>
             </ul>
-            <AppointmentCta label="Conocer Tipologías" />
+
           </div>
           <FloorPlanCarousel />
         </section>

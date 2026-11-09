@@ -88,6 +88,7 @@
   text-align: center;
   box-shadow: 0 3px 10px #292e2620;
   transition: background-color 250ms ease, box-shadow 250ms ease, transform 150ms ease;
+  text-decoration: none;
   scroll-margin-block-start: calc(var(--header-height, 0px) + 24px);
 }
 .cta:not(:disabled) { cursor: pointer; }
