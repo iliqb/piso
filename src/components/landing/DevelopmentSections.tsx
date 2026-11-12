@@ -1,6 +1,7 @@
 
 import { FacadeCarousel, FloorPlanCarousel } from "./FacadeCarousel";
 import styles from "./LandingSections.module.css";
+import heroStyles from "./PropertyHero.module.css";
 
 export function DevelopmentSections() {
   return (
@@ -13,14 +14,18 @@ export function DevelopmentSections() {
             </h2>
             <p className={styles.body}>Zen está concebido como una torre boutique, brindando privacidad, seguridad y bajo costo de mantenimiento a largo plazo.</p>
             <div className={styles.location}>
-              <h3 id="location-title" className={styles.locationHeading}>
-                <svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M20 10c0 5-8 11-8 11s-8-6-8-11a8 8 0 1 1 16 0Z" />
-                  <circle cx="12" cy="10" r="2.5" />
+              <a
+                className={`${heroStyles.cta} ${styles.locationButton}`}
+                href="https://maps.app.goo.gl/ozeaTFgwrPbHjtvU8"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <svg className="lucide lucide-map-pin" aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0" />
+                  <circle cx="12" cy="10" r="3" />
                 </svg>
-                Ubicación Privilegiada
-              </h3>
-              <address className={styles.address}>Calle cerrada Francisco Sarabia, San Juanito, Texcoco</address>
+                Ubicación
+              </a>
               <p className={styles.body}>A pasos caminando de Gran Patio Texcoco (supermercados, bancos, cines) y conexión rápida a vías hacia CDMX.</p>
             </div>
           </div>
