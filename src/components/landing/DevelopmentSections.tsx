@@ -16,7 +16,7 @@ export function DevelopmentSections() {
             <div className={styles.location}>
               <a
                 className={`${heroStyles.cta} ${styles.locationButton}`}
-                href="https://maps.app.goo.gl/ozeaTFgwrPbHjtvU8"
+                href="https://maps.app.goo.gl/uCbGLuPnEuwb8MaZ7"
                 target="_blank"
                 rel="noopener noreferrer"
               >
